@@ -1,0 +1,201 @@
+lass Box extends BaseClass {
+    constructor(x, y, width, height) {
+        super(x, y, width, height);
+        this.image = loadImage("sprites/wood1.png");
+        this.Visibility = 255;
+    }
+    display() {
+        if (this.body.speed < 3) {
+            super.display();
+        }
+        else {
+            World.remove(world, this.body);
+            push();
+            this.Visibility = this.Visibility - 5;
+            tint(255, this.Visibility);
+            image(this.image, this.body.position.x, this.body.position.y, 50, 50);
+            pop();
+        }
+    }
+}; 
+ 17  Ground.js 
+@@ -0,0 +1,17 @@
+class Ground {
+    constructor(x, y, width, height) {
+        var options = {
+            isStatic: true
+        }
+        this.body = Bodies.rectangle(x, y, width, height, options);
+        this.width = width;
+        this.height = height;
+        World.add(world, this.body);
+    }
+    display() {
+        var pos = this.body.position;
+        rectMode(CENTER);
+        fill("brown");
+        rect(pos.x, pos.y, this.width, this.height);
+    }
+}; 
+ 3  README.md 
+@@ -1 +1,2 @@
+# P30
+# p5.play-boilerplate
+Boiler plate for p5.play
+ 50  Slingshot.js 
+@@ -0,0 +1,50 @@
+class SlingShot {
+    constructor(bodyA, pointB) {
+        var options = {
+            bodyA: bodyA,
+            pointB: pointB,
+            stiffness: 0.04,
+            length: 10
+        }
+        this.sling1 = loadImage('sprites/sling1.png');
+        this.sling2 = loadImage('sprites/sling2.png');
+        this.sling3 = loadImage('sprites/sling3.png');
+        this.pointB = pointB
+        this.sling = Constraint.create(options);
+        World.add(world, this.sling);
+    }
+    attach(body) {
+        this.sling.bodyA = body;
+    }
+    fly() {
+        this.sling.bodyA = null;
+    }
+
+    display() {
+        image(this.sling1, 200, 20);
+        image(this.sling2, 170, 20);
+        if (this.sling.bodyA) {
+            var pointA = this.sling.bodyA.position;
+            var pointB = this.pointB;
+            push();
+
+            stroke(48, 22, 8);
+            if (pointA.x < 220) {
+                strokeWeight(7);
+                line(pointA.x - 20, pointA.y, pointB.x - 10, pointB.y);
+                line(pointA.x - 20, pointA.y, pointB.x + 30, pointB.y - 3);
+                image(this.sling3, pointA.x - 30, pointA.y - 10, 15, 30);
+            }
+            else {
+                strokeWeight(3);
+                line(pointA.x + 25, pointA.y, pointB.x - 10, pointB.y);
+                line(pointA.x + 25, pointA.y, pointB.x + 30, pointB.y - 3);
+                image(this.sling3, pointA.x + 25, pointA.y - 10, 15, 30);
+            }
+
+
+            pop();
+        }
+    }
+
+} 
+ 17  index.html 
+@@ -0,0 +1,17 @@
+﻿<!DOCTYPE html><html><head>
+    <script src="p5.js"></script>
+    <script src="p5.dom.min.js"></script>
+    <script src="p5.sound.min.js"></script>
+    <script src="Ground.js"></script>
+    <script src="Boxjs"></script>
+    <script src="Slingshot.js"></script>
+    <script src="./p5.play.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="utf-8">
+
+</head>
+  <body>
+      <script src="sketch.js"></script>
+
+
+</body></html> 
+ 10,180  matter.js 
+Large diffs are not rendered by default.
+
+ 3  p5.dom.min.js 
+Large diffs are not rendered by default.
+
+ 83,507  p5.js 
+Large diffs are not rendered by default.
+
+ 6,742  p5.play.js 
+Large diffs are not rendered by default.
+
+ 28  p5.sound.min.js 
+Large diffs are not rendered by default.
+
+ 60  sketch.js 
+@@ -0,0 +1,60 @@
+function setup() {
+  createCanvas(800,400);
+  createSprite(400, 200, 50, 50);
+}
+function preload() {
+    polygonIMG = loadImage("polygon.png");
+}
+
+imageMode(CENTER)
+image(polygon_img, polygon.position.x, polygon.position.y, 40, 40);
+
+
+
+
+function draw() {
+    background(255, 255, 255);  
+
+    standSprite = createSprite(645, 400);
+
+    //polygon holder with slings
+    polygon = Bodies.circle(50, 200, 20);
+    World.add(world, polygon);
+
+    slingShot = new Slingshot(this.polygon, { x: 100, y: 200 });
+
+    //bottom
+    block1 = new Block(300, 275, 30, 40);
+    block2 = new Block(330, 275, 30, 40);
+    block3 = new Block(360, 275, 30, 40);
+    block4 = new Block(390, 275, 30, 40);
+    block5 = new Block(420, 275, 30, 40);
+    block6 = new Block(450, 275, 30, 40);
+    block7 = new Block(480, 275, 30, 40);
+    //level two
+    block8 = new Block(330, 235, 30, 40);
+    block9 = new Block(360, 235, 30, 40);
+    block10 = new Block(390, 235, 30, 40);
+    block11 = new Block(420, 235, 30, 40);
+    block12 = new Block(450, 235, 30, 40);
+    //level three
+    block13 = new Block(360, 195, 30, 40);
+    block14 = new Block(390, 195, 30, 40);
+    block15 = new Block(420, 195, 30, 40);
+    //top
+    block16 = new Block(390, 155, 30, 40);
+
+  drawSprites();
+}
+
+function keyPressed() {
+    if (keyCode === 32) {
+        slingshot.attach(this.polygon);
+    }
+}
+
+fly() {
+    this.bodyA = null;
+}
+
+
+ 7  style.css 
+@@ -0,0 +1,7 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+canvas {
+  display: block;
+}
